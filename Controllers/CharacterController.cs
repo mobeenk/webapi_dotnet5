@@ -1,13 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using webapi_dotnet5.DTOs;
 using webapi_dotnet5.Models;
 using webapi_dotnet5.Services;
-
+using System.Security.Claims;
 namespace webapi_dotnet5.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class CharacterController : ControllerBase
@@ -22,6 +24,7 @@ namespace webapi_dotnet5.Controllers
 
         public async Task<ActionResult<ServiceResponse<List<GetCharDto>>>> GetAll()
         {
+            int userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier ).Value);
             return Ok(await _characterService.GetAllCharacters());
         }
         [HttpGet("{id}")]
@@ -49,6 +52,11 @@ namespace webapi_dotnet5.Controllers
                 return NotFound(response);
             }
             return Ok(response);
+        }
+        [HttpPost("Skill")]
+        public async Task<ActionResult<ServiceResponse<GetCharDto>>> AddCharacterSkill(AddCharSkillDto newCharacterSkill)
+        {
+            return Ok(await _characterService.AddCharacterSkill(newCharacterSkill));
         }
 
 
