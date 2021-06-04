@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace webapi_dotnet5.Models
 {
@@ -10,5 +11,7 @@ namespace webapi_dotnet5.Models
         public byte[] PasswordSalt { get; set; } 
         // User-Has-Many-Characters this creates another table
         public List<Character> Characters { get; set; }
+        [Required]
+        public string Role { get; set; } 
     }
 }

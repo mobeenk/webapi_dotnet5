@@ -41,6 +41,8 @@ namespace webapi_dotnet5.Services
         private int GetUserId() => 
                 int.Parse(_httpContextAccessor.HttpContext.User
                                         .FindFirstValue(ClaimTypes.NameIdentifier));
+        private string GetUserRole() => 
+                _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
         public async Task<ServiceResponse<List<GetCharDto>>> AddCharacter(AddCharDto newChar)
         {
             var serviceResponse = new ServiceResponse<List<GetCharDto>>();
@@ -65,10 +67,19 @@ namespace webapi_dotnet5.Services
         public async Task<ServiceResponse<List<GetCharDto>>> GetAllCharacters()
         {
             var serviceResponse = new ServiceResponse<List<GetCharDto>>();
-            var dbChars = await _dataContext.Characters
-                .Include(c => c.Weapon)
-                .Include(c => c.Skills)
-                .Where(c => c.User.Id == GetUserId()).ToListAsync();
+            var dbChars = 
+            // Ternary if condition
+            GetUserRole().Equals("Admin")  ? 
+                await _dataContext.Characters
+                    .Include(c => c.Weapon)
+                    .Include(c => c.Skills)
+                    .ToListAsync() 
+                    :
+                await _dataContext.Characters
+                    .Include(c => c.Weapon)
+                    .Include(c => c.Skills)
+                    .Where(c => c.User.Id == GetUserId())
+                    .ToListAsync();
             serviceResponse.Data = dbChars.Select(x => _mapper.Map<GetCharDto>(x)).ToList();
             return serviceResponse;
 

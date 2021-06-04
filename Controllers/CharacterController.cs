@@ -9,7 +9,7 @@ using webapi_dotnet5.Services;
 using System.Security.Claims;
 namespace webapi_dotnet5.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Player, Admin")]
     [ApiController]
     [Route("[controller]")]
     public class CharacterController : ControllerBase
